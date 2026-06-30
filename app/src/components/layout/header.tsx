@@ -1,4 +1,5 @@
 import { Mic, Redo2, Save, Undo2 } from "lucide-react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -7,18 +8,33 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const GITHUB_URL = "https://github.com/pink-cut/pink-cut";
+const GITHUB_URL = "https://github.com/paulovictor237/pink-cut";
+
+/**
+ * Open an external URL.
+ *
+ * In the Tauri desktop runtime we use the official `opener` plugin because
+ * the webview does not implement `window.open`. In a plain browser (e.g.
+ * `bun run dev` without the Tauri shell) we fall back to `window.open`.
+ */
+async function openExternal(url: string) {
+  try {
+    await openUrl(url);
+  } catch {
+    window.open(url, "_blank", "noopener");
+  }
+}
 
 /**
  * Top band of the 3-band layout.
  *
  * Left: GitHub icon — the only external exit point of the app.
  * Right: iconic action buttons (undo/redo/save/mic) with pastel tooltips,
- *        plus a slot for video info.
+ *        plus a slot for video info (filename when a video is loaded).
  *
  * No text menus live here (per AGENTS.md).
  */
-export function Header() {
+export function Header({ filename = null }: { filename?: string | null }) {
   return (
     <header className="flex h-11 shrink-0 items-center justify-between border-b bg-background/80 px-3 backdrop-blur">
       <Tooltip>
@@ -27,7 +43,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             aria-label="Open GitHub repository"
-            onClick={() => window.open(GITHUB_URL, "_blank", "noopener")}
+            onClick={() => openExternal(GITHUB_URL)}
           >
             <GithubIcon />
           </Button>
@@ -42,7 +58,9 @@ export function Header() {
         <HeaderAction icon={<Save />} label="Save" />
         <HeaderAction icon={<Mic />} label="Record" />
         <Separator orientation="vertical" className="mx-2 h-5" />
-        <span className="text-muted-foreground text-xs">No video loaded</span>
+        <span className="text-muted-foreground max-w-[28ch] truncate text-xs">
+          {filename ?? "No video loaded"}
+        </span>
       </div>
     </header>
   );

@@ -49,7 +49,7 @@ Pink Cut is a Descript-style video editor built on **Tauri + React**, with local
 | RTFx on CPU (i5) | ~3,380× — ~5× real-time |
 | Export | ONNX (consumed in Rust via `ort`) |
 | License | **CC-BY-4.0** |
-| Quantized int8 bundle | `parakeet-v3-int8.tar.gz` (~478 MB) |
+| Int8 ONNX source | [`istupakov/parakeet-tdt-0.6b-v3-onnx`](https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/tree/main) — the same repo `parakeet-rs` itself tests against; total ~670 MB across 3 files (`encoder-model.int8.onnx`, `decoder_joint-model.int8.onnx`, `vocab.txt`) |
 
 **Why #1:** Best accuracy/size trade-off in 2026, native word-level output (no experimental flag), tiny footprint, CPU-fast, supports Portuguese. This is the model the Handy reference (closest Tauri-v2 analogue) ships as the CPU default, and it matches the model already named in `AGENTS.md`.
 

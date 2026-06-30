@@ -23,3 +23,20 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.11.3", features = [] }
 tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+
+# ─── Local ASR pipeline (see docs/asr-model-decision.md) ────────────────────
+# parakeet-rs loads the NVIDIA Parakeet TDT 0.6B v3 int8 ONNX model and runs
+# it via the `ort` (ONNX Runtime) crate. CPU-only by default — see
+# features `webgpu`/`cuda` to enable GPU on other platforms.
+parakeet-rs = { version = "0.3", default-features = false, features = ["cpu", "ort-defaults"] }
+# Sync HTTP client for downloading model files + their SHA-256SUMS.
+ureq = { version = "2.10", default-features = false, features = ["tls"] }
+# SHA-256 verification of downloaded model files.
+sha2 = "0.10"
+# Percent-encoding for HuggingFace resolve URLs.
+percent-encoding = "2"
+# Progress events use serde Serialize/Deserialize on the Rust struct.
+# Hex output for the SHA-256 verification log lines.
+hex = "0.4"

@@ -20,6 +20,24 @@
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
+/* --break-- */
+/* Quarter rest — local .ttf shipped with the app. Used as the visual
+ * signature for silences in the transcript (per AGENTS.md).
+ *
+ * The font is an icon font from fontello: it ships a single glyph mapped
+ * to U+005F (`_`). We pin the @font-face to that codepoint with
+ * `unicode-range` so a literal underscore anywhere else in the app keeps
+ * rendering normally with the regular sans-serif, and only the silence
+ * marker picks up the quarter-rest glyph. The `.rest` class below forces
+ * the right font-family for that marker.
+ */
+@font-face {
+    font-family: "Quarter Rest";
+    src: url("/quarter_rest.ttf") format("truetype");
+    font-display: swap;
+    unicode-range: U+005F;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* --break-- */
@@ -241,5 +259,115 @@
     }
     html {
         @apply font-sans;
+    }
+}
+
+/* --break-- */
+/* Studygram notebook page — the central surface of the app.
+ *
+ * - Cream paper background.
+ * - Horizontal rules every 32px (matching the body line-height so the text
+ *   sits *on* the lines, like real ruled paper).
+ * - A pink vertical margin on the left (the classic caderno margem).
+ * - Soft border, no harsh card edges. */
+@layer components {
+    .notebook-page {
+        position: relative;
+        background-color: #fffdf7;
+        background-image: repeating-linear-gradient(
+            to bottom,
+            #fffdf7 0,
+            #fffdf7 39px,
+            #cfe3f0 40px
+        );
+        background-position: 0 0;
+        border: 0.5px solid oklch(var(--border) / 0.6);
+        border-radius: var(--radius-lg);
+        /* Padding-left reserves the pink margin column AND the line-number
+         * gutter (the number badge is absolutely positioned at
+         * `left: -64px` on each line, so it lands in this 0–64px band);
+         * padding-top is 0 on purpose — the first ruled line sits at
+         * y=40, so the first paragraph (line-height 40) must start at
+         * y=0 to land on it. */
+        padding: 0 28px 28px 64px;
+        line-height: 40px;
+        overflow: hidden;
+        color: oklch(var(--foreground));
+        box-shadow: var(--shadow-md);
+    }
+
+    /* The pink left margin line, drawn on top of the rules. */
+    .notebook-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 40px;
+        width: 1px;
+        background: #f0a0a0;
+        pointer-events: none;
+    }
+
+    /* The silence marker. The `.rest` class forces the local "Quarter
+     * Rest" font (whose only glyph is bound to U+005F), so the markup
+     * writes a plain `_` and CSS turns it into the quarter rest icon.
+     * The rest of the page uses Quicksand. */
+    .rest {
+        font-family: "Quarter Rest", "Quicksand", sans-serif;
+        font-size: 1.4em;
+        vertical-align: -0.15em;
+        color: oklch(var(--primary));
+    }
+    .rest-soft {
+        opacity: 0.7;
+    }
+
+    /* Each transcription segment sits on its own ruled line of the
+     * notebook page. We force line-height: 40px (matching the rule gap)
+     * and zero the default <p> margin so consecutive segments are
+     * stacked on adjacent lines with no blank row between them.
+     * `position: relative` anchors the line-number badge absolutely
+     * inside the line.
+     *
+     * Long segments wrap onto multiple ruled lines instead of being
+     * ellipsized — the rule grid (40px) means every wrapped line still
+     * lands on a rule, so the notebook feel is preserved. The
+     * `overflow-wrap: anywhere` lets very long single words (URLs, ASR
+     * glitches) still fit without overflowing the page. */
+    .notebook-line {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        line-height: 40px;
+        min-height: 40px;
+        font-size: 18px;
+        /* Extra breathing room between words — keeps the Studygram
+         * "handwritten on a page" feel without hard-coding a px value. */
+        word-spacing: 0.3em;
+        overflow-wrap: anywhere;
+    }
+
+    /* Line number badge that sits in the gap between the pink margin
+     * (page-left: 40px) and the writing column (page-left: 64px).
+     * Right-aligned so the digits hug the pink line and the text isn't
+     * crowded. Small, dim, mono so it reads as metadata. The line itself
+     * is offset right by 64px (the page's padding-left), so we use a
+     * negative `left` to push the badge back into the page's left
+     * margin. */
+    .notebook-line-number {
+        position: absolute;
+        top: 0;
+        left: -64px;
+        width: 56px; /* spans the pink margin (40px) + the 16px gutter */
+        padding-right: 4px;
+        line-height: 40px;
+        text-align: right;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        color: oklch(var(--muted-foreground) / 0.7);
+        pointer-events: none;
+        user-select: none;
     }
 }
