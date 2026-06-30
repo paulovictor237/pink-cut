@@ -1,0 +1,28 @@
+<div style="padding:1rem 0;">
+<h2 class="sr-only">Demonstração de estilo caderno studygram feito com fonte de caligrafia e CSS</h2>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Shantell+Sans:wght@400;600&display=swap');
+.paper{background:#fffdf7;background-image:repeating-linear-gradient(#fffdf7 0,#fffdf7 31px,#cfe3f0 32px);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:24px 28px 28px 56px;position:relative;line-height:32px;overflow:hidden;}
+.paper:before{content:"";position:absolute;top:0;bottom:0;left:38px;width:1px;background:#f0a0a0;}
+.hw{font-family:'Caveat',cursive;font-size:26px;color:#2b3a55;}
+.hw2{font-family:'Patrick Hand',cursive;font-size:19px;color:#39424e;}
+.mk{background:linear-gradient(transparent 55%,#fff59d 55%);padding:0 2px;}
+.mk-g{background:linear-gradient(transparent 55%,#b9f6ca 55%);padding:0 2px;}
+.mk-p{background:linear-gradient(transparent 55%,#f8bbd0 55%);padding:0 2px;}
+.rasura{position:relative;color:#9aa0a6;}
+.rasura:after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:2px;background:#d8624a;transform:rotate(-1.5deg);}
+.box{display:inline-block;border:2px solid #2b3a55;border-radius:6px;padding:0 6px;transform:rotate(-1deg);}
+.arrow{font-family:'Caveat',cursive;color:#d8624a;font-size:22px;}
+.tag{font-family:'Shantell Sans';font-size:13px;background:#fff59d;color:#7a5c00;padding:2px 8px;border-radius:10px;transform:rotate(2deg);display:inline-block;}
+</style>
+<div style="background:var(--color-background-secondary);padding:18px;border-radius:var(--border-radius-lg);">
+  <div class="paper">
+    <div class="hw" style="font-weight:700;font-size:30px;">Fotossíntese <span class="tag">resumo</span></div>
+    <div class="hw">As plantas convertem <span class="mk">luz solar</span> em <span class="mk-g">energia</span> 🌱</div>
+    <div class="hw">Acontece nos <span class="box">cloroplastos</span> &nbsp;<span class="arrow">← importante!</span></div>
+    <div class="hw">Fórmula: 6CO₂ + 6H₂O <span class="rasura">vira açucar</span> → glicose</div>
+    <div class="hw2" style="margin-top:6px;">obs: a <span class="mk-p">clorofila</span> capta a luz — não esquecer pra prova</div>
+    <div class="hw2">errei isso antes: <span class="rasura">respiração = fotossíntese</span></div>
+  </div>
+</div>
+</div>
