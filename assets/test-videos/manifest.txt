@@ -1,0 +1,31 @@
+manifest: timeline real do áudio (PT-BR, voz Luciana/macOS, SR=16 kHz)
+Duração total: 72.67s
+Cada linha = 1 utterance TTS + silêncio de padding ao final.
+
+#   | Categoria  | Início  | Fim     | Texto (verbatim — é o que o parakeet deve transcrever)
+----+------------+---------+---------+----------------------------------------------------------------
+01  | OPEN       | 00:00.0 | 00:04.3 | "Fala galera, sejam bem vindos a mais um vídeo do Pink Cut."
+02  | FILL       | 00:04.8 | 00:09.1 | "éh, hoje eu vou mostrar como a ferramenta funciona na prática."   ← FILLER: "éh"
+03  | BODY       | 00:09.8 | 00:14.0 | "A primeira coisa que a gente precisa fazer é importar um vídeo."
+04  | FILL       | 00:14.6 | 00:19.0 | "éh, tipo, basta arrastar e soltar o arquivo aqui nesta área."    ← FILLER: "éh", "tipo"
+05  | TAKE1      | 00:19.8 | 00:23.4 | "Depois disso, é só clicar no botão de transcrever."               ╮
+06  | TAKE1      | 00:23.8 | 00:27.8 | "Depois disso, é só clicar no botão de transcrever, tá?"           ╯  DOUBLE TAKE
+07  | TAKE2      | 00:28.1 | 00:31.8 | "Depois disso, basta clicar no botão de transcrever."               ← versão corrigida
+08  | BODY       | 00:33.3 | 00:37.0 | "A transcrição é feita localmente com o modelo parakeet."
+09  | FILL       | 00:37.7 | 00:41.4 | "né, isso significa que nada sai do seu computador."               ← FILLER: "né"
+10  | FILL       | 00:42.1 | 00:46.3 | "hum, e o processo leva alguns minutos dependendo do tamanho."    ← FILLER: "hum"
+11  | BODY       | 00:47.1 | 00:50.3 | "Agora vamos ver os três recursos principais."                       ← silêncio de 2s após
+12  | BODY       | 00:52.3 | 00:57.0 | "O primeiro são as palavras de preenchimento, como assim, éh, hum." ← FILLER: "assim", "éh", "hum"
+13  | BODY       | 00:57.6 | 01:02.4 | "O segundo são os cortes de silêncio, marcados com uma pausa musical."
+14  | BODY       | 01:03.2 | 01:07.7 | "E o terceiro são os takes repetidos, que a gente chama de retake."
+15  | FILL       | 01:08.3 | 01:11.3 | "tá bom, é isso aí, valeu e até a próxima."                       ← FILLER: "tá"
+----+------------+---------+---------+----------------------------------------------------------------
+
+Expectativa de validação (o que o Pink Cut deve detectar automaticamente):
+
+  • Filter Words   → segmentos 02, 04, 09, 10, 12, 15
+                     palavras-alvo: éh, hum, tipo, né, assim, tá
+  • Double Takes   → par (05, 06) — só um deve sobreviver após o "retake"
+                     o (07) é a versão "boa" equivalente
+  • Silence Cuts   → pausa de 2.0s logo após o segmento 11
+                     e pausas curtas (~0.3–0.8s) entre quase todos os outros
