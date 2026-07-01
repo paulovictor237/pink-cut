@@ -33,6 +33,7 @@ import { Header } from "@/components/layout/header";
 import { UploadVideoForm, type VideoFile } from "@/features/media";
 import { AssetsSidebar } from "@/features/project";
 import { EditorSurface } from "@/features/editor";
+import { useDemoSeed } from "@/dev/demo-seed";
 
 export function AppShell() {
   return (
@@ -43,7 +44,7 @@ export function AppShell() {
 }
 
 function AppShellInner() {
-  const { addAsset, activeAsset } = useProject();
+  const { addAsset, setTranscription, activeAsset } = useProject();
   const [activeMenu, setActiveMenu] = useState<MenuKey | null>(null);
   // The shell flips this once when the first asset is added so the
   // sidebar auto-opens. After that the user owns the toggle.
@@ -55,6 +56,20 @@ function AppShellInner() {
       description: "Pick the transcription in the editor to start ✨",
     });
   };
+
+  // Dev-only: seed a sample transcript when the URL carries `?demo=1`.
+  // Lets us preview the editor surface without running the full ASR.
+  useDemoSeed(
+    typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("demo") === "1",
+    (handle) => {
+      // `addAsset` mints a fresh id internally (see `makeAssetId`) and
+      // returns the real `ProjectAsset` — use that id so the
+      // transcription gets mirrored onto the active asset.
+      const added = addAsset(handle.asset.file);
+      setTranscription(added.id, handle.transcription);
+    },
+  );
 
   // Auto-open the File (left) sidebar the first time a video lands.
   useEffect(() => {

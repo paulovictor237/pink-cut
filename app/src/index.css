@@ -285,7 +285,8 @@
         border-radius: var(--radius-lg);
         /* Padding-left reserves the pink margin column AND the line-number
          * gutter (the number badge is absolutely positioned at
-         * `left: -64px` on each line, so it lands in this 0–64px band);
+         * `left: -56px` on each line, so it lands in the 0–40px band,
+         * before the pink margin line at page-left 40px);
          * padding-top is 0 on purpose — the first ruled line sits at
          * y=40, so the first paragraph (line-height 40) must start at
          * y=0 to land on it. */
@@ -348,25 +349,32 @@
         overflow-wrap: anywhere;
     }
 
-    /* Line number badge that sits in the gap between the pink margin
-     * (page-left: 40px) and the writing column (page-left: 64px).
-     * Right-aligned so the digits hug the pink line and the text isn't
-     * crowded. Small, dim, mono so it reads as metadata. The line itself
-     * is offset right by 64px (the page's padding-left), so we use a
-     * negative `left` to push the badge back into the page's left
-     * margin. */
+    /* Line number badge that sits in the page-left band, *before* the
+     * pink margin line (page-left: 40px). Styled as a small bujo-style
+     * sticker: rounded, with a faint pastel fill, mono digits, and
+     * right-aligned so the badge hugs the pink line with a small
+     * breathing gap. The line itself is offset right by 64px (the
+     * page's padding-left), so we use a negative `left` to push the
+     * badge back into the page's left margin. */
     .notebook-line-number {
         position: absolute;
-        top: 0;
-        left: -64px;
-        width: 56px; /* spans the pink margin (40px) + the 16px gutter */
-        padding-right: 4px;
-        line-height: 40px;
-        text-align: right;
+        top: 50%;
+        left: -58px;
+        transform: translateY(-50%);
+        min-width: 24px;
+        height: 22px;
+        padding: 0 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: #f3c8c8;
+        color: #6b3838;
         font-family: var(--font-mono);
-        font-size: 10px;
-        font-weight: 500;
-        color: oklch(var(--muted-foreground) / 0.7);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
         pointer-events: none;
         user-select: none;
     }
