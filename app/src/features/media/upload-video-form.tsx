@@ -96,8 +96,12 @@ export function UploadVideoForm({
 
   const handleBrowse = useCallback(async () => {
     setLocalError(null);
-    const picked = await pickVideoFile();
-    if (picked) onVideoSelected(picked);
+    try {
+      const picked = await pickVideoFile();
+      if (picked) onVideoSelected(picked);
+    } catch {
+      setLocalError("Couldn't open the file picker. Try again.");
+    }
   }, [pickVideoFile, onVideoSelected]);
 
   const handleDrop = useCallback(

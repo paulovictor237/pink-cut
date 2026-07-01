@@ -40,10 +40,19 @@ export function usePickVideoFile() {
       // string[] (multiple). We forced `multiple: false`, so it's a string.
       const path = Array.isArray(selected) ? selected[0] : selected;
       return pathToVideoFile(path);
-    } catch {
-      // 2) Browser fallback (dev / web). Uses a hidden <input> so we keep
-      //    the same return type and don't burden the caller.
-      return pickInBrowser();
+    } catch (err) {
+      // Only fall back to the browser picker when we're actually outside
+      // Tauri (the plugin is genuinely absent). Inside the Tauri shell a
+      // thrown error means the native dialog itself failed — falling back
+      // silently would swap that real error for a confusing "path is not
+      // absolute" failure once the caller tries to use the bare filename
+      // the browser input returns.
+      if (!checkTauri()) {
+        return pickInBrowser();
+      }
+      // eslint-disable-next-line no-console
+      console.error("[pickVideoFile] native dialog failed:", err);
+      throw err;
     } finally {
       setIsPicking(false);
     }

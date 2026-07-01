@@ -81,19 +81,32 @@ type SegmentRow = {
  * matching predicate so the 𝄾 visually belongs to the segment the user
  * just *finished* reading, not the one that hasn't started yet.
  *
- * A 1 ms tolerance absorbs integer-rounding noise from the ASR/VAD
- * pipeline.
+ * Matching is exact modulo a 1 ms tolerance (absorbs integer-rounding
+ * noise from the ASR/VAD pipeline) and, among candidates within that
+ * tolerance, picks the closest one to the segment boundary — this stays
+ * correct even if a producer other than the current Rust pipeline ever
+ * emits silences that aren't strictly one-per-gap.
  */
 function buildRows(transcription: Transcription): SegmentRow[] {
   const { segments, silences } = transcription;
+  const TOLERANCE_MS = 1;
 
   return segments.map((segment, i) => {
     const next = segments[i + 1];
-    const trailingSilence = next
-      ? (silences.find(
-          (s) => s.startMs >= segment.endMs - 1 && s.endMs <= next.startMs + 1,
-        ) ?? null)
-      : null;
+    let trailingSilence: Silence | null = null;
+    if (next) {
+      let bestDelta = Infinity;
+      for (const s of silences) {
+        const startDelta = Math.abs(s.startMs - segment.endMs);
+        const endDelta = Math.abs(s.endMs - next.startMs);
+        if (startDelta > TOLERANCE_MS || endDelta > TOLERANCE_MS) continue;
+        const delta = startDelta + endDelta;
+        if (delta < bestDelta) {
+          bestDelta = delta;
+          trailingSilence = s;
+        }
+      }
+    }
 
     return { segment, trailingSilence, lineNumber: i + 1 };
   });

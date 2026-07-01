@@ -199,14 +199,33 @@ pub fn download_model(app: AppHandle) -> Result<(), String> {
             return Err(e);
         }
 
-        // Verify SHA-256 if we have a hash for this file.
-        if let Some(expected) = sums.as_ref().and_then(|m| m.get(file.name)) {
-            let actual =
-                sha256_file(&dest).map_err(|e| format!("hashing {}: {e}", dest.display()))?;
-            if actual.to_lowercase() != expected.to_lowercase() {
+        // Verify SHA-256. A missing SHA256SUMS file is treated as a hard
+        // failure rather than skipped — otherwise a truncated/corrupted
+        // download would silently pass as a "ready" model file.
+        let expected = sums.as_ref().and_then(|m| m.get(file.name));
+        match expected {
+            Some(expected) => {
+                let actual = sha256_file(&dest)
+                    .map_err(|e| format!("hashing {}: {e}", dest.display()))?;
+                if actual.to_lowercase() != expected.to_lowercase() {
+                    let msg = format!(
+                        "SHA-256 mismatch for {}: expected {}, got {}",
+                        file.name, expected, actual
+                    );
+                    emit_progress(
+                        &app,
+                        DownloadProgress::Failed {
+                            message: msg.clone(),
+                        },
+                    );
+                    let _ = fs::remove_file(&dest);
+                    return Err(msg);
+                }
+            }
+            None => {
                 let msg = format!(
-                    "SHA-256 mismatch for {}: expected {}, got {}",
-                    file.name, expected, actual
+                    "Não foi possível verificar a integridade de {} (SHA256SUMS indisponível). Tente novamente.",
+                    file.name
                 );
                 emit_progress(
                     &app,

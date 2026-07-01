@@ -165,12 +165,24 @@ pub fn transcribe_path(app: &AppHandle, video_path: String) -> Result<Transcript
             .map_err(|e| format!("Parakeet falhou no trecho {}/{}: {e}", i + 1, chunks.len()))?;
 
         let offset_secs = (*offset_samples as f32) / 16_000.0;
-        for tok in result.tokens {
-            // Skip tokens that fall inside the overlap region of the
-            // previous chunk (we already transcribed them).
-            if i > 0 && tok.start < CHUNK_OVERLAP_SECS {
-                continue;
+
+        // The overlap region — `[offset_secs, offset_secs + CHUNK_OVERLAP_SECS]`
+        // in absolute time — is transcribed twice: once as the tail of
+        // chunk `i-1` (with no future context) and once as the head of
+        // chunk `i` (with full future context). Prefer chunk `i`'s
+        // version — it's the better transcription — by dropping the
+        // *previous* chunk's tokens that overlap that window, rather than
+        // dropping the current chunk's own head tokens. This also means a
+        // token whose span straddles the cutoff is never clipped: it's
+        // either kept whole (from chunk `i`) or discarded whole (from
+        // chunk `i-1`).
+        if i > 0 {
+            while all_tokens.last().is_some_and(|t| t.end_secs > offset_secs) {
+                all_tokens.pop();
             }
+        }
+
+        for tok in result.tokens {
             all_tokens.push(RawToken {
                 text: tok.text,
                 start_secs: tok.start + offset_secs,

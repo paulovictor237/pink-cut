@@ -15,6 +15,7 @@
  * presentation + selection.
  */
 import { Film, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,9 +36,13 @@ export function AssetsSidebar() {
   const { pickVideoFile, isPicking } = usePickVideoFile();
 
   const handleAdd = async () => {
-    const picked = await pickVideoFile();
-    if (!picked) return;
-    addAsset(picked);
+    try {
+      const picked = await pickVideoFile();
+      if (!picked) return;
+      addAsset(picked);
+    } catch {
+      toast.error("Couldn't open the file picker. Try again.");
+    }
   };
 
   return (
